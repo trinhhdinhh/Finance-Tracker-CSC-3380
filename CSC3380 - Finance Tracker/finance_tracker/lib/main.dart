@@ -165,7 +165,7 @@ class WelcomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           const Text(
-                            '\$99,999.99',
+                            '\$1234.56',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 32,
