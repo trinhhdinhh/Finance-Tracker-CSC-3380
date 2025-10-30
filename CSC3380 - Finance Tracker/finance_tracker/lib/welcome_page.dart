@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'login_page.dart';
 import 'create_account_page.dart';
+import 'transaction_page.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -346,7 +347,41 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 12), //was 32 originally
+
+                // Skip to Transaction Page button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      // Navigate to Transaction Page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TransactionPage()),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF15803d),
+                      side: const BorderSide(
+                        color: Color(0xFF15803d),
+                        width: 2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      backgroundColor: Colors.white,
+                    ),
+                    child: const Text(
+                      'Skip to Transaction page for Demo',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
               ],
             ),
           ),
