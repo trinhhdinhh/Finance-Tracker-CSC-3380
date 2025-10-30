@@ -112,7 +112,7 @@ class WelcomePage extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  'Take control of you financial future with smart tracking and personalized insights',
+                  'Take control of your financial future with smart tracking and personalized insights',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,

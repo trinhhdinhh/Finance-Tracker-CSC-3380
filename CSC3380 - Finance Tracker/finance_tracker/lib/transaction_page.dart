@@ -166,7 +166,7 @@ class TransactionPageState extends State<TransactionPage> {
       allGroupedTransactions[key] = [newTransaction];
       allGroupedTransactions = Map.fromEntries(
         allGroupedTransactions.entries.toList()
-          ..sort((a, b) => a.key.compareTo(b.key)),
+          ..sort((a,b) => b.key.compareTo(a.key)),
       );
     }
     // Re-flatten the list for search filtering
