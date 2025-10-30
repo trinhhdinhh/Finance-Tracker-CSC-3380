@@ -43,7 +43,7 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               children: [
               const SizedBox(height: 24),
-              
+
               // Finance Tracker Badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -71,9 +71,9 @@ class WelcomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Title
               const Text(
                 'Your Money,',
@@ -93,9 +93,9 @@ class WelcomePage extends StatelessWidget {
                   height: 1.2,
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Subtitle
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -109,9 +109,9 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Balance Card
               Container(
                 width: double.infinity,
@@ -184,9 +184,9 @@ class WelcomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // Income and Expense Row
                     Row(
                       children: [
@@ -221,9 +221,9 @@ class WelcomePage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(width: 10),
-                        
+
                         // Expense Box
                         Expanded(
                           child: Container(
@@ -269,7 +269,7 @@ class WelcomePage extends StatelessWidget {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigate to create account 
+                    // Navigate to create account
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF15803d),
@@ -295,9 +295,9 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // I Already Have an Account Button
               SizedBox(
                 width: double.infinity,
