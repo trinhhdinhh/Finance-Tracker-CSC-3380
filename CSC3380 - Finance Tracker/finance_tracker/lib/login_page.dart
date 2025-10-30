@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'create_account_page.dart';
@@ -13,6 +14,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   // Controllers for managing text input state
+  // Also reused for saved credentials.
+  
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -21,12 +24,6 @@ class _LoginPageState extends State<LoginPage> {
 
   // Controls whether password is visible or obscured
   bool _isPasswordVisible = false;
-
-  // Saved credentials for authentication
-  // TODO: Integrate with Firebase Authentication
-  // TODO: Never store passwords in plain text - use secure storage/Firebase Auth
-  String savedEmail = "";
-  String savedPassword = "";
 
   @override
   void dispose() {
@@ -119,11 +116,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: const [
-          Icon(
-            Icons.arrow_back,
-            color: Color(0xFF15803d),
-            size: 20,
-          ),
+          Icon(Icons.arrow_back, color: Color(0xFF15803d), size: 20),
           SizedBox(width: 4),
           Text(
             'Back',
@@ -170,10 +163,7 @@ class _LoginPageState extends State<LoginPage> {
         SizedBox(height: 8),
         Text(
           'Manage your money with ease',
-          style: TextStyle(
-            fontSize: 15,
-            color: Colors.black54,
-          ),
+          style: TextStyle(fontSize: 15, color: Colors.black54),
         ),
       ],
     );
@@ -185,10 +175,7 @@ class _LoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFE0E0E0),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
       ),
       child: TextFormField(
         controller: _emailController,
@@ -204,10 +191,7 @@ class _LoginPageState extends State<LoginPage> {
           hintText: 'Email',
           hintStyle: TextStyle(color: Colors.black38),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         // Validation logic for email field
         validator: (value) {
@@ -220,9 +204,6 @@ class _LoginPageState extends State<LoginPage> {
           }
           return null;
         },
-        onChanged: (value) {
-          savedEmail = value;
-        },
       ),
     );
   }
@@ -233,10 +214,7 @@ class _LoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFE0E0E0),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
       ),
       child: TextFormField(
         controller: _passwordController,
@@ -282,9 +260,6 @@ class _LoginPageState extends State<LoginPage> {
           }
           return null;
         },
-        onChanged: (value) {
-          savedPassword = value;
-        },
       ),
     );
   }
@@ -306,10 +281,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: const Text(
           'Login',
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -320,30 +292,17 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       children: [
         // Left line
-        Expanded(
-          child: Container(
-            height: 1,
-            color: const Color(0xFFE0E0E0),
-          ),
-        ),
+        Expanded(child: Container(height: 1, color: const Color(0xFFE0E0E0))),
         // Text in the middle
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'Or continue with',
-            style: TextStyle(
-              color: Colors.black38,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.black38, fontSize: 13),
           ),
         ),
         // Right line
-        Expanded(
-          child: Container(
-            height: 1,
-            color: const Color(0xFFE0E0E0),
-          ),
-        ),
+        Expanded(child: Container(height: 1, color: const Color(0xFFE0E0E0))),
       ],
     );
   }
@@ -372,11 +331,7 @@ class _LoginPageState extends State<LoginPage> {
             label: 'Apple',
             onTap: _handleAppleLogin,
             // Apple icon
-            icon: const Icon(
-              Icons.apple,
-              size: 24,
-              color: Colors.black,
-            ),
+            icon: const Icon(Icons.apple, size: 24, color: Colors.black),
           ),
         ),
       ],
@@ -396,10 +351,7 @@ class _LoginPageState extends State<LoginPage> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: const Color(0xFFE0E0E0),
-            width: 1,
-          ),
+          border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -427,10 +379,7 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         const Text(
           "Don't have an account? ",
-          style: TextStyle(
-            color: Colors.black54,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: Colors.black54, fontSize: 14),
         ),
         InkWell(
           onTap: _navigateToSignUp,
@@ -457,87 +406,80 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  /// Validates user credentials against backend/Firebase
-  /// TODO: Implement actual authentication logic
-  void _validateCredentials() {
-    // TODO: Integrate with Firebase Authentication
-    // Example implementation:
-    // try {
-    //   await FirebaseAuth.instance.signInWithEmailAndPassword(
-    //     email: savedEmail,
-    //     password: savedPassword,
-    //   );
-    //   // Navigate to home page on success
-    //   Navigator.pushReplacementNamed(context, '/home');
-    // } catch (e) {
-    //   // Show error message
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Login failed: ${e.toString()}')),
-    //   );
-    // }
+  /// Validates user credentials against backend/FirebaseAuth
+  void _validateCredentials() async {
 
-    print('Attempting login with email: $savedEmail');
-    // For now, just show a success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Login functionality not yet implemented'),
-        backgroundColor: Color(0xFF15803d),
-      ),
-    );
+    print('Attempting login with email: ${_emailController.text}');
+
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      // Welcome the user if everything succeeded.
+      _welcomeSignedInUser(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      } else {
+        print("Cannot log in: ${e.code}");
+      }
+    }
   }
 
   /// Handles Google sign-in authentication
-  /// TODO: Implement Google Sign-In with Firebase
-  void _handleGoogleLogin() {
-    // TODO: Implement Google Sign-In
-    // Example implementation:
-    // try {
-    //   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    //   final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-    //   final credential = GoogleAuthProvider.credential(
-    //     accessToken: googleAuth?.accessToken,
-    //     idToken: googleAuth?.idToken,
-    //   );
-    //   await FirebaseAuth.instance.signInWithCredential(credential);
-    //   Navigator.pushReplacementNamed(context, '/home');
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Google sign-in failed: ${e.toString()}')),
-    //   );
-    // }
+  void _handleGoogleLogin() async {
+    UserCredential user = await _signInWithProvider(GoogleAuthProvider());
 
-    print('Google login tapped');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Google Sign-In not yet implemented'),
-        backgroundColor: Color(0xFF15803d),
-      ),
-    );
+    _welcomeSignedInUser(user);
+  }
+    /// Handles Apple sign-in authentication
+  void _handleAppleLogin() async {
+    // Uncomment when we get the apple thing situated.
+    //UserCredential user = await _signInWithProvider(AppleAuthProvider());
+
+    //_welcomeSignedInUser(user);
+    
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sorry, Apple account integration is not implemented yet!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      // Go to the /home page
+      // TODO: how shall we implement pages?
+      // Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
-  /// Handles Apple sign-in authentication
-  /// TODO: Implement Apple Sign-In with Firebase
-  void _handleAppleLogin() {
-    // TODO: Implement Apple Sign-In
-    // Note: Apple Sign-In requires proper configuration in Xcode and Firebase
-    // Example implementation:
-    // try {
-    //   final appleProvider = AppleAuthProvider();
-    //   await FirebaseAuth.instance.signInWithProvider(appleProvider);
-    //   Navigator.pushReplacementNamed(context, '/home');
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Apple sign-in failed: ${e.toString()}')),
-    //   );
-    // }
+  void _welcomeSignedInUser(UserCredential user) {
+    print("User is signed in: ${user.user?.displayName}");
 
-    print('Apple login tapped');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Apple Sign-In not yet implemented'),
-        backgroundColor: Color(0xFF15803d),
-      ),
-    );
+    // Reason for "context.mounted": 
+    // https://dart.dev/tools/diagnostics/use_build_context_synchronously
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Welcome, ${user.user?.displayName}!'),
+          backgroundColor: const Color(0xFF15803d),
+        ),
+      );
+      // Go to the /home page
+      // TODO: how shall we implement pages?
+      // Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
+  /// This will open a pop-up in a new window.
+  /// This always succeeds, but note that user.user can be null,
+  /// as it is of type "String?".
+  Future<UserCredential> _signInWithProvider(AuthProvider provider) async {
+    UserCredential user = await FirebaseAuth.instance.signInWithPopup(provider);
+
+    return user;
   }
 
   /// Navigates to the sign up page for new users

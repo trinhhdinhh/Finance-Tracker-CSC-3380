@@ -1,17 +1,30 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'login_page.dart';
 import 'create_account_page.dart';
 import 'transaction_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:finance_tracker/firebase_options.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // Disable persistence on web platforms. Must be called on initialization:
+  final auth = FirebaseAuth.instanceFor(app: Firebase.app());
+  // To change it after initialization, use `setPersistence()`:
+  await auth.setPersistence(Persistence.LOCAL);
+
   runApp(const FinanceTrackerApp());
 }
 
@@ -55,7 +68,7 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               children: [
               const SizedBox(height: 24),
-              
+
               // Finance Tracker Badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -83,9 +96,9 @@ class WelcomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Title
               const Text(
                 'Your Money,',
@@ -105,9 +118,9 @@ class WelcomePage extends StatelessWidget {
                   height: 1.2,
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Subtitle
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -121,9 +134,9 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Balance Card
               Container(
                 width: double.infinity,
@@ -196,9 +209,9 @@ class WelcomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // Income and Expense Row
                     Row(
                       children: [
@@ -233,9 +246,9 @@ class WelcomePage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(width: 10),
-                        
+
                         // Expense Box
                         Expanded(
                           child: Container(
