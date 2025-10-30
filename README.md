@@ -1,8 +1,7 @@
 This is where the CSC3380 project resides.
 
-===================================
-Firebase authentication setup guide
-===================================
+
+### Firebase authentication setup guide
 
 1. Install FlutterFire CLI:
    ```bash
@@ -16,9 +15,7 @@ Firebase authentication setup guide
    - Select "lsu-csc3380-project-fall-2025"
    - Choose _at least_ the Web platform
 
-==========
-How to run
-==========
+### How to run
 # 1. Configure Firebase (as seen above)
 
 # 2a. Run from VSCode
@@ -36,9 +33,7 @@ Follow this guide: https://docs.flutter.dev/install/with-vs-code
     flutter run -t lib/welcome_page.dart
     ```
 
-===========
-Small TODOs
-===========
+### Small TODOs
 
 1. Email Verification:
    ```dart
