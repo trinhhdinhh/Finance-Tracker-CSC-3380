@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'login_page.dart';
+import 'create_account_page.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -38,33 +40,11 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class WelcomePage extends StatefulWidget {
+class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return _WelcomePageState();
-  }
-}
-
-class _WelcomePageState extends State<WelcomePage> {
-  bool showLoginBox = false;
-
-  // Saved credentials.
-  // TODO: how should we obscure the password when we send it over the network?
-  String savedEmail = "";
-  String savedPassword = "";
-
-  @override
   Widget build(BuildContext context) {
-    if (showLoginBox) {
-      return _buildLoginBox(context);
-    } else {
-      return _buildWelcomeContent(context);
-    }
-  }
-
-  Widget _buildWelcomeContent(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE8F5E9), // Light mint green background
       body: SafeArea(
@@ -301,6 +281,10 @@ class _WelcomePageState extends State<WelcomePage> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Navigate to create account
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CreateAccountPage()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF15803d),
@@ -335,12 +319,11 @@ class _WelcomePageState extends State<WelcomePage> {
                   height: 52,
                   child: OutlinedButton(
                     onPressed: () {
-                      // When the button is pressed, we need to advertise that the state changed.
-                      setState(() {
-                        showLoginBox = true;
-                      });
-
-                      // Navigate to login
+                      // Navigate to login page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                      );
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF15803d),
@@ -370,137 +353,5 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ),
     );
-  }
-
-  Widget _buildLoginBox(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E9),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Needed in order for the other boxes to not be left-aligned.
-                Container(width: double.infinity),
-                // Gap.
-                const SizedBox(height: 10),
-                // Draw the squircle for the wallet icon.
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF15803d),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Icon(
-                    Icons.account_balance_wallet,
-                    color: Colors.white.withOpacity(0.8),
-                    size: 32,
-                  ),
-                ),
-                // Another gap.
-                const SizedBox(height: 10),
-                // Make the size relative to the screen.
-                // In this case, 50%.
-                FractionallySizedBox(
-                  widthFactor: 0.5,
-                  child: SafeArea(
-                    child: TextField(
-                      style: TextStyle(fontSize: 18),
-                      decoration: InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF15803d),
-                            width: 2,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
-                        labelText: "Email",
-                        hintText: "email@example.com",
-                      ),
-                      onChanged: (value) {
-                        print("saved email $value");
-                        savedEmail = value;
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                FractionallySizedBox(
-                  widthFactor: 0.5,
-                  child: SafeArea(
-                    child: TextField(
-                      style: TextStyle(
-                        fontSize: 18,
-                        // w600 is way too heavy for this, but left here to show that you can do it.
-                        //fontWeight: FontWeight.w600,
-                      ),
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF15803d),
-                            width: 2,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
-                        labelText: "Password",
-                      ),
-                      onChanged: (value) {
-                        print("saved password: $value");
-                        savedPassword = value;
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // TODO: we should move these into their own
-                // encapsulated unit and set size based on max(screenWidth * 0.4, X amount of pixels).
-                FractionallySizedBox(
-                  widthFactor: 0.4,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _validateCredentials();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF15803d),
-                      foregroundColor: Colors.white,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // In Dart, you don't annotate functions with the fact that they throw, unfortunately.
-  // https://dart.dev/language/error-handling
-  void _validateCredentials() {
-    // TODO: validate credentials based on what is stored in the FireStore DB.
-    throw UnimplementedError("Credential validation unimplemented!");
   }
 }

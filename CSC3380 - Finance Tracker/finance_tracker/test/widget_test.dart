@@ -9,6 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:finance_tracker/welcome_page.dart';
 
+import 'package:finance_tracker/create_account_page.dart';
+
 void main() {
   testWidgets('Finance Tracker app loads correctly', (WidgetTester tester) async {
     // Build our app and trigger a frame.
