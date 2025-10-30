@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'login_page.dart';
+import 'create_account_page.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -16,16 +19,24 @@ class FinanceTrackerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Finance Tracker',
-      theme: ThemeData(
-        primaryColor: const Color(0xFF15803d),
-        scaffoldBackgroundColor: const Color(0xFFE8F5E9),
-        fontFamily: 'SF Pro',
+    return ChangeNotifierProvider(
+      create: (context) => MyAppState(),
+      child: MaterialApp(
+        title: 'Finance Tracker',
+        theme: ThemeData(
+          primaryColor: const Color(0xFF15803d),
+          scaffoldBackgroundColor: const Color(0xFFE8F5E9),
+          fontFamily: 'SF Pro',
+        ),
+        home: const WelcomePage(),
       ),
-      home: const WelcomePage(),
     );
+  }
+}
+
+class MyAppState extends ChangeNotifier {
+  void toLoginPage() async {
+    notifyListeners();
   }
 }
 
@@ -43,7 +54,7 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               children: [
               const SizedBox(height: 24),
-
+              
               // Finance Tracker Badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -71,9 +82,9 @@ class WelcomePage extends StatelessWidget {
                   ],
                 ),
               ),
-
+              
               const SizedBox(height: 24),
-
+              
               // Title
               const Text(
                 'Your Money,',
@@ -93,9 +104,9 @@ class WelcomePage extends StatelessWidget {
                   height: 1.2,
                 ),
               ),
-
+              
               const SizedBox(height: 12),
-
+              
               // Subtitle
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -109,9 +120,9 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
               ),
-
+              
               const SizedBox(height: 32),
-
+              
               // Balance Card
               Container(
                 width: double.infinity,
@@ -184,9 +195,9 @@ class WelcomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-
+                    
                     const SizedBox(height: 12),
-
+                    
                     // Income and Expense Row
                     Row(
                       children: [
@@ -221,9 +232,9 @@ class WelcomePage extends StatelessWidget {
                             ),
                           ),
                         ),
-
+                        
                         const SizedBox(width: 10),
-
+                        
                         // Expense Box
                         Expanded(
                           child: Container(
@@ -261,73 +272,81 @@ class WelcomePage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              // Get Started Button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to create account
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF15803d),
-                    foregroundColor: Colors.white,
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                // Get Started Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Navigate to create account
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CreateAccountPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF15803d),
+                      foregroundColor: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      SizedBox(width: 6),
-                      Icon(Icons.arrow_forward, size: 18),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // I Already Have an Account Button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton(
-                  onPressed: () {
-                    // Navigate to login
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF15803d),
-                    side: const BorderSide(
-                      color: Color(0xFF15803d),
-                      width: 2,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    backgroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    'I Already Have an Account',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          'Get Started',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 6),
+                        Icon(Icons.arrow_forward, size: 18),
+                      ],
                     ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 32),
+                const SizedBox(height: 12),
+
+                // I Already Have an Account Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      // Navigate to login page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF15803d),
+                      side: const BorderSide(
+                        color: Color(0xFF15803d),
+                        width: 2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      backgroundColor: Colors.white,
+                    ),
+                    child: const Text(
+                      'I Already Have an Account',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
               ],
             ),
           ),
