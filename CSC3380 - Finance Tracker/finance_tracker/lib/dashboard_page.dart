@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'transaction_page.dart';
+import 'add_transaction_page.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -28,7 +30,7 @@ class Dashboard extends StatelessWidget {
       bottomNavigationBar: _buildBottomNavBar(),
 
       // "+" button
-      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButton: _buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
@@ -44,7 +46,7 @@ Widget _buildHeaderSection() {
         style: TextStyle(
           fontSize: 20, //insert true font
           fontWeight: FontWeight.bold,
-          color: Colors.green, //insert true color
+          color: Color(0xFF2E7D32),
         ),
       ),
       const SizedBox(height: 4),
@@ -64,76 +66,150 @@ Widget _buildHeaderSection() {
 Widget _buildBalanceCard() {
   return Container(
     width: double.infinity,
-    padding: const EdgeInsets.all(16.0), // Match Figma Padding
+    padding: const EdgeInsets.all(20), // Match Figma Padding
     decoration: BoxDecoration(
-      color: Colors.green, // replace card background color from figma
-      borderRadius: BorderRadius.circular(16), //replace with true corner radius
-
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // "Total Balance" Label
-        Text(
-          'Total Balance',
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.8), //DEPRECATED !!!
-            fontSize: 14, // insert true font size
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        //Balance amount
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '\$12,345.67', //bind to actual data
-              style: TextStyle(
-                fontSize: 28, // insert true font size
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF2E7D32),
+            Color(0xFF1B5E20),
           ],
         ),
-        const SizedBox(height: 4),
-        
-        // Expense and income summary side by side
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+    child: Column(
+      children: [
+        // Total Balance Section
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Total Balance',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Icon(
+                    Icons.trending_up,
+                    color: Colors.white.withOpacity(0.8),
+                    size: 18,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                '\$99,999.99', //replace with true numbers
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                '+15.3% this month',
+                style: TextStyle(
+                  color: Color(0xFF81C784),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Income and Expense Row
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildSummaryItem('Expense', '\$1,234'), // bind actual data
-            _buildSummaryItem('Income', '\$1,234'), // bind actual data
+            // Income Box
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Income',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '\$1,234', // replace with true numbers
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            // Expense Box
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Expense',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '\$1,234', //replace with true numbers
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ],
     ),
-  );
-}
-
-// helper widget to show "Expense" and "Income" blocks
-Widget _buildSummaryItem(String label, String amount) {
-  return Column(
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.8), //DEPRECATED !!!
-          fontSize: 12, //replace with true font size
-        ),
-      ),
-      const SizedBox(height: 4),
-      Text(
-        amount,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 16, //replace with true font size
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ],
   );
 }
 
@@ -145,6 +221,16 @@ Widget _buildRecentTransactions() {
       decoration:BoxDecoration(
         color:Colors.white, //insert card background color
         borderRadius: BorderRadius.circular(16),
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            spreadRadius:1,
+            offset: const Offset(0,4),
+          ),
+        ],
+
         border: Border.all(color: Colors.grey[300]!), //Match true border color
       ),
       child: Column(
@@ -167,7 +253,7 @@ Widget _buildRecentTransactions() {
                 child: Text(
                   'See All',
                   style: TextStyle(
-                    color: Colors.green, // Use real color
+                    color: Color(0xFF2E7D32), // Use real color
                   ),
                 ),
               ),
@@ -203,7 +289,7 @@ Widget _buildRecentTransactions() {
   );
 }
 
-//--------------- Recent Transactions ---------------
+//--------------- Navigation Bar ---------------
 // Contains navigations icons for Home, Account, Category, and Settings
 Widget _buildBottomNavBar() {
   return BottomAppBar(
@@ -224,10 +310,17 @@ Widget _buildBottomNavBar() {
 
 //--------------- Floating Action Button ---------------
 // The "+" button 
-Widget _buildFloatingActionButton() {
+Widget _buildFloatingActionButton(BuildContext context) {
   return FloatingActionButton(
-    onPressed: () {}, // TODO: Define what this does
-    backgroundColor: Colors.green, // TODO: Replace with accent color
+    onPressed: () {
+      // Navigate to Add Transaction Page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddTransactionPage(onSave: (String dateHeader, Transaction newTransaction) {  },)),
+      );
+    },
+    backgroundColor: Color(0xFF2E7D32), // TODO: Replace with accent color
+    foregroundColor: Colors.black,
     child: const Icon(Icons.add, size: 32),
   );
 }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'login_page.dart';
 import 'create_account_page.dart';
+import 'dashboard_page.dart';
 import 'transaction_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:finance_tracker/firebase_options.dart';
@@ -387,6 +388,39 @@ class WelcomePage extends StatelessWidget {
                     ),
                     child: const Text(
                       'Skip to Transaction page for Demo',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Skip to Dashboard Page button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      // Navigate to Dashboard Page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Dashboard()),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF15803d),
+                      side: const BorderSide(
+                        color: Color(0xFF15803d),
+                        width: 2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      backgroundColor: Colors.white,
+                    ),
+                    child: const Text(
+                      'Skip to Dashboard page for Demo',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
