@@ -1,37 +1,113 @@
 import 'package:flutter/material.dart';
 import 'transaction_page.dart';
 import 'add_transaction_page.dart';
+import 'category_page.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
+
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  int _selectedIndex = 0;
+
+  // List of pages to display
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      _buildHomePage(),
+      const Center(child: Text('Account Page - Coming Soon')), // Placeholder for Account page
+      const CategoriesAnalyticsPage(),
+      const Center(child: Text('Settings Page - Coming Soon')), // Placeholder for Settings page
+    ];
+  }
+
+  void _onNavItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
+
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal:16.0, vertical:8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeaderSection(),
-              const SizedBox(height: 16),
-              _buildBalanceCard(),
-              const SizedBox(height: 16),
-              _buildRecentTransactions(),
-            ],
-          ),
-        ),
+        child: _pages[_selectedIndex],
       ),
-  
+
       // navigation bars
       bottomNavigationBar: _buildBottomNavBar(),
 
       // "+" button
       floatingActionButton: _buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  // Home page content (the original dashboard)
+  Widget _buildHomePage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal:16.0, vertical:8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeaderSection(),
+          const SizedBox(height: 16),
+          _buildBalanceCard(),
+          const SizedBox(height: 16),
+          _buildRecentTransactions(),
+        ],
+      ),
+    );
+  }
+
+  //--------------- Navigation Bar ---------------
+  // Contains navigations icons for Home, Account, Category, and Settings
+  Widget _buildBottomNavBar() {
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(), // adds notch for FAB
+      notchMargin: 8.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          IconButton(
+            onPressed: () => _onNavItemTapped(0),
+            icon: Icon(
+              Icons.home,
+              color: _selectedIndex == 0 ? const Color(0xFF2E7D32) : Colors.grey,
+            ),
+          ), // Home tab
+          IconButton(
+            onPressed: () => _onNavItemTapped(1),
+            icon: Icon(
+              Icons.account_balance,
+              color: _selectedIndex == 1 ? const Color(0xFF2E7D32) : Colors.grey,
+            ),
+          ), //Account tab
+          const SizedBox(width: 40), //Space for "+" button
+          IconButton(
+            onPressed: () => _onNavItemTapped(2),
+            icon: Icon(
+              Icons.category,
+              color: _selectedIndex == 2 ? const Color(0xFF2E7D32) : Colors.grey,
+            ),
+          ), // category tab
+          IconButton(
+            onPressed: () => _onNavItemTapped(3),
+            icon: Icon(
+              Icons.settings,
+              color: _selectedIndex == 3 ? const Color(0xFF2E7D32) : Colors.grey,
+            ),
+          ), // Settings tab
+        ],
+      ),
     );
   }
 }
@@ -216,49 +292,56 @@ Widget _buildBalanceCard() {
 //--------------- Recent Transactions ---------------
 Widget _buildRecentTransactions() {
   return Expanded(
-    child: Container(
-      padding: const EdgeInsets.all(16), //Adjust Padding
-      decoration:BoxDecoration(
-        color:Colors.white, //insert card background color
-        borderRadius: BorderRadius.circular(16),
+    child: Builder(
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16), //Adjust Padding
+        decoration:BoxDecoration(
+          color:Colors.white, //insert card background color
+          borderRadius: BorderRadius.circular(16),
 
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            spreadRadius:1,
-            offset: const Offset(0,4),
-          ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              spreadRadius:1,
+              offset: const Offset(0,4),
+            ),
+          ],
 
-        border: Border.all(color: Colors.grey[300]!), //Match true border color
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header row: "Recent Transactions" + "See All"
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Recent Transactions',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black, // replace with true color
-                ),
-              ),
-              TextButton(
-                onPressed: () {}, // Add navigation to full transaction list
-                child: Text(
-                  'See All',
+          border: Border.all(color: Colors.grey[300]!), //Match true border color
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row: "Recent Transactions" + "See All"
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Recent Transactions',
                   style: TextStyle(
-                    color: Color(0xFF2E7D32), // Use real color
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // replace with true color
                   ),
                 ),
-              ),
-            ],
-          ),
+                TextButton(
+                  onPressed: () {
+                    // Navigate to Transaction Page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TransactionPage()),
+                    );
+                  },
+                  child: Text(
+                    'See All',
+                    style: TextStyle(
+                      color: Color(0xFF2E7D32), // Use real color
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
           const SizedBox(height: 8),
 
@@ -286,24 +369,6 @@ Widget _buildRecentTransactions() {
         ],
       ),
     ),
-  );
-}
-
-//--------------- Navigation Bar ---------------
-// Contains navigations icons for Home, Account, Category, and Settings
-Widget _buildBottomNavBar() {
-  return BottomAppBar(
-    shape: const CircularNotchedRectangle(), // adds notch for FAB
-    notchMargin: 8.0,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.home)), // Home tab
-        IconButton(onPressed: () {}, icon: const Icon(Icons.account_balance)), //Account tab
-        const SizedBox(width: 40), //Space for "+" button
-        IconButton(onPressed: () {}, icon: const Icon(Icons.category)), // category tab
-        IconButton(onPressed: () {}, icon: const Icon(Icons.settings)), // Settings tab
-      ],
     ),
   );
 }

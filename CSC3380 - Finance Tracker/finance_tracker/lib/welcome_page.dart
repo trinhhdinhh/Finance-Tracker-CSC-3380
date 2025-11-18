@@ -63,14 +63,16 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFE8F5E9), // Light mint green background
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              children: [
-              const SizedBox(height: 24),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                  const SizedBox(height: 24),
 
-              // Finance Tracker Badge
+                  // Finance Tracker Badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
@@ -361,77 +363,43 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 12), //was 32 originally
+                const SizedBox(height: 32),
 
-                // Skip to Transaction Page button
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // Navigate to Transaction Page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => TransactionPage()),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF15803d),
-                      side: const BorderSide(
-                        color: Color(0xFF15803d),
-                        width: 2,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      backgroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      'Skip to Transaction page for Demo',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Skip to Dashboard Page button
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // Navigate to Dashboard Page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Dashboard()),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF15803d),
-                      side: const BorderSide(
-                        color: Color(0xFF15803d),
-                        width: 2,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      backgroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      'Skip to Dashboard page for Demo',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-
-              ],
+                ],
+              ),
             ),
           ),
+
+          // Skip button in top right corner
+          Positioned(
+            top: 16,
+            right: 16,
+            child: TextButton(
+              onPressed: () {
+                // Navigate to Dashboard Page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Dashboard()),
+                );
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF15803d),
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                'Skip',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
         ),
       ),
     );
