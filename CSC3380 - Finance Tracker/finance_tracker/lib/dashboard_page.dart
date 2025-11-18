@@ -131,7 +131,7 @@ Widget _buildHeaderSection() {
         'Welcome Landon!', // make dynamic (user name)
         style: TextStyle(
           fontSize: 14, //insert true font
-          color: Colors.grey[600], //insert true color
+          color: const Color(0xFF757575), //insert true color
         ),
       ),
     ],
@@ -308,7 +308,7 @@ Widget _buildRecentTransactions() {
             ),
           ],
 
-          border: Border.all(color: Colors.grey[300]!), //Match true border color
+          border: Border.all(color: const Color(0xFFE0E0E0)), //Match true border color
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,7 +352,7 @@ Widget _buildRecentTransactions() {
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: Colors.grey[200], // replace with true
+                    backgroundColor: const Color(0xFFEEEEEE), // replace with true
                   ),
                   title: Text('Transaction Title'), // TODO: Transaction name
                   subtitle: Text('Date or category'), // TODO: subtitle text
