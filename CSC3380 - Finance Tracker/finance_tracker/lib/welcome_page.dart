@@ -6,6 +6,8 @@ import 'login_page.dart';
 import 'create_account_page.dart';
 import 'dashboard_page.dart';
 import 'transaction_page.dart';
+import 'transaction_provider.dart';
+import 'category_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:finance_tracker/firebase_options.dart';
 
@@ -34,8 +36,23 @@ class FinanceTrackerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => MyAppState()),
+        ChangeNotifierProvider(create: (context) => CategoryProvider()),
+        ChangeNotifierProxyProvider<CategoryProvider, TransactionProvider>(
+          create: (context) => TransactionProvider(),
+          update: (context, categoryProvider, transactionProvider) {
+            if (transactionProvider != null) {
+              // Set up the callback to update category spending when transactions change
+              transactionProvider.setupCategoryCallback(
+                (spending, counts) => categoryProvider.recalculateSpending(spending, counts),
+              );
+            }
+            return transactionProvider ?? TransactionProvider();
+          },
+        ),
+      ],
       child: MaterialApp(
         title: 'Finance Tracker',
         theme: ThemeData(

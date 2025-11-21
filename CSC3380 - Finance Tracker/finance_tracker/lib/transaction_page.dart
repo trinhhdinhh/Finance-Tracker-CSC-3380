@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'add_transaction_page.dart';
+import 'transaction_provider.dart';
 
 const Color primaryGreen = Color.fromARGB(255, 23, 128, 61); //Color is #17803d from Figma
 const Color headerGreen = Color.fromARGB(255, 56, 142, 60); //Color is #12AF4B from Figma
@@ -40,58 +42,27 @@ class TransactionPageState extends State<TransactionPage> {
   */
 
   // Initializations
-  late Map<String, List<Transaction>> allGroupedTransactions;
-  late List<Transaction> allTransactionsFlat;
   List<Transaction> filteredTransactions = [];
   String searchText = '';
 
   @override
   void initState() {
-    // Initial immutable data structure
-    Map<String, List<Transaction>> initialData = {
-      "October 27, 2025": [
-        Transaction(initial: 'L', title: 'Lululemon', category: 'Shopping', value: '- \$128.50', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'S', title: 'Starbucks', category: 'Food & Drink', value: '- \$6.25', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'W', title: 'Work Salary', category: 'Income', value: '+ \$2,500.00', valueColor: primaryGreen, avatarColor: headerGreen),
-      ],
-      "October 26, 2025": [
-        Transaction(initial: 'A', title: 'Amazon', category: 'Shopping', value: '- \$45.99', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'N', title: 'Netflix', category: 'Subscriptions', value: '- \$15.49', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'U', title: 'Uber', category: 'Transport', value: '- \$15.00', valueColor: Colors.black87, avatarColor: expense),
-      ],
-      "October 25, 2025": [
-        Transaction(initial: 'T', title: 'Target', category: 'Shopping', value: '- \$6.25', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'P', title: 'Pharmacy', category: 'Health', value: '- \$35.00', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'L', title: 'Lululemon', category: 'Shopping', value: '- \$155.50', valueColor: Colors.black87, avatarColor: expense),
-      ],
-      "October 24, 2025": [
-        Transaction(initial: 'L', title: 'Lululemon', category: 'Shopping', value: '- \$128.50', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'S', title: 'Starbucks', category: 'Food & Drink', value: '- \$6.25', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'W', title: 'Work Salary', category: 'Income', value: '+ \$2,500.00', valueColor: primaryGreen, avatarColor: headerGreen),
-      ],
-      "October 23, 2025": [
-        Transaction(initial: 'A', title: 'Amazon', category: 'Shopping', value: '- \$45.99', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'N', title: 'Netflix', category: 'Subscriptions', value: '- \$15.49', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'U', title: 'Uber', category: 'Transport', value: '- \$15.00', valueColor: Colors.black87, avatarColor: expense),
-      ],
-      "October 22, 2025": [
-        Transaction(initial: 'T', title: 'Target', category: 'Shopping', value: '- \$6.25', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'P', title: 'Pharmacy', category: 'Health', value: '- \$35.00', valueColor: Colors.black87, avatarColor: expense),
-        Transaction(initial: 'L', title: 'Lululemon', category: 'Shopping', value: '- \$155.50', valueColor: Colors.black87, avatarColor: expense),
-      ],
-    };
-
-    // Convert all internal lists to GROWABLE lists using .toList()
-    allGroupedTransactions = initialData.map((key, value) => MapEntry(key, value.toList()));
-
-    // Flatten and initialize filtered list
-    allTransactionsFlat = allGroupedTransactions.values.expand((list) => list).toList();
-    filteredTransactions = allTransactionsFlat;
     super.initState();
+    // Initialize filtered transactions on first load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<TransactionProvider>(context, listen: false);
+      setState(() {
+        filteredTransactions = provider.allTransactions;
+      });
+    });
   }
 
   // --- Searching Logic ---
   void runFilter(String enteredKeyword) {
+    final provider = Provider.of<TransactionProvider>(context, listen: false);
+    final allGroupedTransactions = provider.groupedTransactions;
+    final allTransactionsFlat = provider.allTransactions;
+
     searchText = enteredKeyword;
     List<Transaction> results = [];
     String keywordLower = enteredKeyword.toLowerCase();
@@ -105,7 +76,7 @@ class TransactionPageState extends State<TransactionPage> {
               transaction.title.toLowerCase().contains(keywordLower))
           .toList();
       // 2. Filter by DATE HEADER
-      allGroupedTransactions.forEach((dateHeader, transactions) { // Iterate through the grouped map to find date matches
+      allGroupedTransactions.forEach((dateHeader, transactions) {
         if (dateHeader.toLowerCase().contains(keywordLower)) {
           // If the date header matches the keyword, add ALL transactions from that date to the results
           for (var tx in transactions) {
@@ -156,24 +127,12 @@ class TransactionPageState extends State<TransactionPage> {
 
   // Method to add a transaction and update the state
   void addTransaction(String dateHeader, Transaction newTransaction) {
-    String key = dateHeader.trim(); 
+    final provider = Provider.of<TransactionProvider>(context, listen: false);
+    provider.addTransaction(dateHeader, newTransaction);
 
-    if (allGroupedTransactions.containsKey(key)) {
-      // 1. DATE EXISTS: Add the transaction to the front of existing list.
-      allGroupedTransactions[key]!.insert(0, newTransaction);
-    } else {
-      // 2. NEW DATE: Create a new map with the new entry FIRST, followed by all the old entries.
-      allGroupedTransactions[key] = [newTransaction];
-      allGroupedTransactions = Map.fromEntries(
-        allGroupedTransactions.entries.toList()
-          ..sort((a,b) => b.key.compareTo(a.key)),
-      );
-    }
-    // Re-flatten the list for search filtering
-    allTransactionsFlat = allGroupedTransactions.values.expand((list) => list).toList();
     // UI refresh and clear filter
     setState(() {
-      runFilter(''); 
+      runFilter('');
     });
   }
   
@@ -183,57 +142,65 @@ class TransactionPageState extends State<TransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50], // White background color
+    return Consumer<TransactionProvider>(
+      builder: (context, transactionProvider, child) {
+        final allGroupedTransactions = transactionProvider.groupedTransactions;
 
-      // Toolbar (The back button, and handles the "scrolling down look"properly)
-      appBar: AppBar(
-        backgroundColor: Colors.grey[50], 
-        elevation: 0,
-        // "< Back" button
-        leading: TextButton.icon(
-          onPressed: () {
-            // Goes to the previous page
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.arrow_back_ios, size: 18, color: primaryGreen), 
-          label: Text("Back", style: TextStyle(color: primaryGreen, fontSize: 16), ),
-        ),
-        leadingWidth: 100, // Make space for the icon and text
-      ),
+        return Scaffold(
+          backgroundColor: Colors.grey[50], // White background color
 
-      body: ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                
-                buttons(), // Top row of buttons
-                const SizedBox(height: 24), // Spacing
+          // Toolbar (The back button, and handles the "scrolling down look"properly)
+          appBar: AppBar(
+            backgroundColor: Colors.grey[50],
+            elevation: 0,
+            // "< Back" button
+            leading: TextButton.icon(
+              onPressed: () {
+                // Goes to the previous page
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.arrow_back_ios, size: 18, color: primaryGreen),
+              label: const Text(
+                "Back",
+                style: TextStyle(color: primaryGreen, fontSize: 16),
+              ),
+            ),
+            leadingWidth: 100, // Make space for the icon and text
+          ),
 
-                searchBar(), // Search Bar
-                const SizedBox(height: 24), // Spacing
+          body: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              buttons(), // Top row of buttons
+              const SizedBox(height: 24), // Spacing
 
-                // Iterates over the keys (dates) of the map
-                ...allGroupedTransactions.keys.map((dateHeader) {
-                  // Get the list of transactions for this date
-                  List<Transaction> transactions = allGroupedTransactions[dateHeader]!;
-                  // Use buildFilteredSection to conditionally display the header and tiles
-                  return Column(
-                    children: buildFilteredSection(dateHeader, transactions),
-                  );
-                }),
-                // No transactions found message
-                if (filteredTransactions.isEmpty && searchText.isNotEmpty)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 40.0),
-                    child: Center(
-                      child: Text(
-                        'No transactions found matching your search.',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
-                      ),
+              searchBar(), // Search Bar
+              const SizedBox(height: 24), // Spacing
+
+              // Iterates over the keys (dates) of the map
+              ...allGroupedTransactions.keys.map((dateHeader) {
+                // Get the list of transactions for this date
+                List<Transaction> transactions = allGroupedTransactions[dateHeader]!;
+                // Use buildFilteredSection to conditionally display the header and tiles
+                return Column(
+                  children: buildFilteredSection(dateHeader, transactions),
+                );
+              }),
+              // No transactions found message
+              if (filteredTransactions.isEmpty && searchText.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(top: 40.0),
+                  child: Center(
+                    child: Text(
+                      'No transactions found matching your search.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 

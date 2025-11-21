@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'transaction_page.dart'; // Using Transaction class and Colors from this file
+import 'category_provider.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final Function(String dateHeader, Transaction newTransaction) onSave;
@@ -16,9 +18,6 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   String? selectedCategory; // Use String? for the dropdown value
-
-  // Category values for the dropdown widget
-  final List<String> _categories = ['Food & Drink', 'Shopping', 'Transport', 'Subscriptions', 'Income', 'Health'];
 
   // Reset controllers when the widget is disposed
   @override
@@ -183,33 +182,39 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   }
 
   Widget categoryDropdown() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          hint: const Text('Select Category'),
-          value: selectedCategory,
-          isExpanded: true,
-          style: const TextStyle(color: Colors.black, fontSize: 16),
-          icon: const Icon(Icons.keyboard_arrow_down, color: primaryGreen),
-          items: _categories.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Text(category),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              selectedCategory = newValue;
-            });
-          },
-        ),
-      ),
+    return Consumer<CategoryProvider>(
+      builder: (context, categoryProvider, child) {
+        final categories = categoryProvider.categoryNames;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              hint: const Text('Select Category'),
+              value: selectedCategory,
+              isExpanded: true,
+              style: const TextStyle(color: Colors.black, fontSize: 16),
+              icon: const Icon(Icons.keyboard_arrow_down, color: primaryGreen),
+              items: categories.map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedCategory = newValue;
+                });
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 

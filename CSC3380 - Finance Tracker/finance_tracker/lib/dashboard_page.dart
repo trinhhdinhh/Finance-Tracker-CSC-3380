@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'transaction_page.dart';
 import 'add_transaction_page.dart';
 import 'category_page.dart';
+import 'transaction_provider.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -292,100 +294,143 @@ Widget _buildBalanceCard() {
 //--------------- Recent Transactions ---------------
 Widget _buildRecentTransactions() {
   return Expanded(
-    child: Builder(
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16), //Adjust Padding
-        decoration:BoxDecoration(
-          color:Colors.white, //insert card background color
-          borderRadius: BorderRadius.circular(16),
+    child: Consumer<TransactionProvider>(
+      builder: (context, transactionProvider, child) {
+        // Get the 5 most recent transactions
+        final recentTransactions = transactionProvider.getRecentTransactions(5);
 
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              spreadRadius:1,
-              offset: const Offset(0,4),
-            ),
-          ],
-
-          border: Border.all(color: const Color(0xFFE0E0E0)), //Match true border color
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header row: "Recent Transactions" + "See All"
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Recent Transactions',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black, // replace with true color
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // Navigate to Transaction Page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TransactionPage()),
-                    );
-                  },
-                  child: Text(
-                    'See All',
-                    style: TextStyle(
-                      color: Color(0xFF2E7D32), // Use real color
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-          const SizedBox(height: 8),
-
-          // Scrollable list of transations
-          Expanded(
-            child: ListView.builder(
-              itemCount: 4, // Make dynamic
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: const Color(0xFFEEEEEE), // replace with true
-                  ),
-                  title: Text('Transaction Title'), // TODO: Transaction name
-                  subtitle: Text('Date or category'), // TODO: subtitle text
-                  trailing: Text(
-                    '-\$123.45', // TODO: Bind actual transaction amount
-                    style: TextStyle(
-                      color: Colors.red, // TODO: Red for expenses, green for income
-                    ),
-                  ),
-                );
-              },
-            ),
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                spreadRadius: 1,
+                offset: const Offset(0, 4),
+              ),
+            ],
+            border: Border.all(color: const Color(0xFFE0E0E0)),
           ),
-        ],
-      ),
-    ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row: "Recent Transactions" + "See All"
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Recent Transactions',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Navigate to Transaction Page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TransactionPage()),
+                      );
+                    },
+                    child: const Text(
+                      'See All',
+                      style: TextStyle(
+                        color: Color(0xFF2E7D32),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              // Scrollable list of transactions
+              Expanded(
+                child: recentTransactions.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No transactions yet',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: recentTransactions.length,
+                        itemBuilder: (context, index) {
+                          final transaction = recentTransactions[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: transaction.avatarColor,
+                              child: Text(
+                                transaction.initial,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              transaction.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Text(
+                              transaction.category,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            trailing: Text(
+                              transaction.value,
+                              style: TextStyle(
+                                color: transaction.valueColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
     ),
   );
 }
 
 //--------------- Floating Action Button ---------------
-// The "+" button 
+// The "+" button
 Widget _buildFloatingActionButton(BuildContext context) {
   return FloatingActionButton(
     onPressed: () {
+      final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+
       // Navigate to Add Transaction Page
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddTransactionPage(onSave: (String dateHeader, Transaction newTransaction) {  },)),
+        MaterialPageRoute(
+          builder: (context) => AddTransactionPage(
+            onSave: (String dateHeader, Transaction newTransaction) {
+              // Add transaction to the shared provider
+              transactionProvider.addTransaction(dateHeader, newTransaction);
+            },
+          ),
+        ),
       );
     },
-    backgroundColor: Color(0xFF2E7D32), // TODO: Replace with accent color
-    foregroundColor: Colors.black,
+    backgroundColor: const Color(0xFF2E7D32),
+    foregroundColor: Colors.white,
     child: const Icon(Icons.add, size: 32),
   );
 }
