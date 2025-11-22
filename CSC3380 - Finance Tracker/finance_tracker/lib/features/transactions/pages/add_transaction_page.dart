@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'transaction_page.dart'; // Using Transaction class and Colors from this file
-import 'category_provider.dart';
+import 'package:finance_tracker/features/transactions/pages/transaction_page.dart'; // Using Transaction class and Colors from this file
+import 'package:finance_tracker/features/categories/providers/category_provider.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final Function(String dateHeader, Transaction newTransaction) onSave;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'transaction_page.dart';
+import 'package:finance_tracker/features/transactions/pages/transaction_page.dart';
 
 /// Shared state provider for managing transactions across the app
 class TransactionProvider extends ChangeNotifier {

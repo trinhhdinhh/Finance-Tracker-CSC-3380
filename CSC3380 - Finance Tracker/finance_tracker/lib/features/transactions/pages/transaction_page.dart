@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'add_transaction_page.dart';
-import 'transaction_provider.dart';
+import 'package:finance_tracker/features/transactions/pages/add_transaction_page.dart';
+import 'package:finance_tracker/features/transactions/providers/transaction_provider.dart';
 
 const Color primaryGreen = Color.fromARGB(255, 23, 128, 61); //Color is #17803d from Figma
 const Color headerGreen = Color.fromARGB(255, 56, 142, 60); //Color is #12AF4B from Figma

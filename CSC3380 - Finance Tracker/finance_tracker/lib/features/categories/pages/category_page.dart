@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
-import 'category_provider.dart';
-import 'category_detail_page.dart';
+import 'package:finance_tracker/features/categories/providers/category_provider.dart';
+import 'package:finance_tracker/features/categories/pages/category_detail_page.dart';
 
 /// Categories and Analytics page displaying spending breakdown with ring chart.
 ///

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'category_provider.dart';
-import 'transaction_provider.dart';
-import 'transaction_page.dart';
+import 'package:finance_tracker/features/categories/providers/category_provider.dart';
+import 'package:finance_tracker/features/transactions/providers/transaction_provider.dart';
+import 'package:finance_tracker/features/transactions/pages/transaction_page.dart';
 
 /// Category Detail Page - Shows all transactions for a specific category
 class CategoryDetailPage extends StatelessWidget {

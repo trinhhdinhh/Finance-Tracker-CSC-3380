@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'create_account_page.dart';
+import 'package:finance_tracker/features/auth/pages/create_account_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
