@@ -199,6 +199,10 @@ class TransactionProvider extends ChangeNotifier {
     return _allTransactions.take(count).toList();
   }
 
+  List<Transaction> getRecentTransactionsAtMost(int count) {
+     return getRecentTransactions(_allTransactions.length >= count ? count : _allTransactions.length);
+  }
+
   /// Add a new transaction
   void addTransaction(String dateHeader, Transaction newTransaction) {
     String key = dateHeader.trim();

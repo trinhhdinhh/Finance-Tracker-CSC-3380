@@ -1,3 +1,4 @@
+import 'package:finance_tracker/features/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:finance_tracker/features/transactions/pages/transaction_page.dart';
@@ -23,9 +24,13 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     _pages = [
       _buildHomePage(),
-      const Center(child: Text('Account Page - Coming Soon')), // Placeholder for Account page
+      const Center(
+        child: Text('Account Page - Coming Soon'),
+      ), // Placeholder for Account page
       const CategoriesAnalyticsPage(),
-      const Center(child: Text('Settings Page - Coming Soon')), // Placeholder for Settings page
+      const Center(
+        child: Text('Settings Page - Coming Soon'),
+      ), // Placeholder for Settings page
     ];
   }
 
@@ -40,9 +45,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      body: SafeArea(
-        child: _pages[_selectedIndex],
-      ),
+      body: SafeArea(child: _pages[_selectedIndex]),
 
       // navigation bars
       bottomNavigationBar: _buildBottomNavBar(),
@@ -56,7 +59,7 @@ class _DashboardState extends State<Dashboard> {
   // Home page content (the original dashboard)
   Widget _buildHomePage() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal:16.0, vertical:8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -83,14 +86,18 @@ class _DashboardState extends State<Dashboard> {
             onPressed: () => _onNavItemTapped(0),
             icon: Icon(
               Icons.home,
-              color: _selectedIndex == 0 ? const Color(0xFF2E7D32) : Colors.grey,
+              color: _selectedIndex == 0
+                  ? const Color(0xFF2E7D32)
+                  : Colors.grey,
             ),
           ), // Home tab
           IconButton(
             onPressed: () => _onNavItemTapped(1),
             icon: Icon(
               Icons.account_balance,
-              color: _selectedIndex == 1 ? const Color(0xFF2E7D32) : Colors.grey,
+              color: _selectedIndex == 1
+                  ? const Color(0xFF2E7D32)
+                  : Colors.grey,
             ),
           ), //Account tab
           const SizedBox(width: 40), //Space for "+" button
@@ -98,14 +105,18 @@ class _DashboardState extends State<Dashboard> {
             onPressed: () => _onNavItemTapped(2),
             icon: Icon(
               Icons.category,
-              color: _selectedIndex == 2 ? const Color(0xFF2E7D32) : Colors.grey,
+              color: _selectedIndex == 2
+                  ? const Color(0xFF2E7D32)
+                  : Colors.grey,
             ),
           ), // category tab
           IconButton(
             onPressed: () => _onNavItemTapped(3),
             icon: Icon(
               Icons.settings,
-              color: _selectedIndex == 3 ? const Color(0xFF2E7D32) : Colors.grey,
+              color: _selectedIndex == 3
+                  ? const Color(0xFF2E7D32)
+                  : Colors.grey,
             ),
           ), // Settings tab
         ],
@@ -120,7 +131,7 @@ Widget _buildHeaderSection() {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        'Finance Tracker', 
+        'Finance Tracker',
         style: TextStyle(
           fontSize: 20, //insert true font
           fontWeight: FontWeight.bold,
@@ -128,7 +139,7 @@ Widget _buildHeaderSection() {
         ),
       ),
       const SizedBox(height: 4),
-      
+
       Text(
         'Welcome Landon!', // make dynamic (user name)
         style: TextStyle(
@@ -149,20 +160,17 @@ Widget _buildBalanceCard() {
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF2E7D32),
-            Color(0xFF1B5E20),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
       ),
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.15),
+          blurRadius: 20,
+          offset: const Offset(0, 10),
+        ),
+      ],
+    ),
     child: Column(
       children: [
         // Total Balance Section
@@ -193,8 +201,9 @@ Widget _buildBalanceCard() {
                 ],
               ),
               const SizedBox(height: 6),
-              const Text(
-                '\$99,999.99', //replace with true numbers
+              Database.fieldFromUser(
+                field: 'balance',
+                isMoney: true,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 32,
@@ -205,10 +214,7 @@ Widget _buildBalanceCard() {
               const SizedBox(height: 4),
               const Text(
                 '+15.3% this month',
-                style: TextStyle(
-                  color: Color(0xFF81C784),
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Color(0xFF81C784), fontSize: 12),
               ),
             ],
           ),
@@ -229,17 +235,15 @@ Widget _buildBalanceCard() {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Income',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      '\$1,234', // replace with true numbers
+                    Database.fieldFromUser(
+                      field: 'income',
+                      isMoney: true,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -263,17 +267,15 @@ Widget _buildBalanceCard() {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Expense',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      '\$1,234', //replace with true numbers
+                    Database.fieldFromUser(
+                      field: 'expense',
+                      isMoney: true,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -297,7 +299,8 @@ Widget _buildRecentTransactions() {
     child: Consumer<TransactionProvider>(
       builder: (context, transactionProvider, child) {
         // Get the 5 most recent transactions
-        final recentTransactions = transactionProvider.getRecentTransactions(5);
+        final recentTransactions = transactionProvider
+            .getRecentTransactionsAtMost(5);
 
         return Container(
           padding: const EdgeInsets.all(16),
@@ -334,14 +337,14 @@ Widget _buildRecentTransactions() {
                       // Navigate to Transaction Page
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const TransactionPage()),
+                        MaterialPageRoute(
+                          builder: (context) => const TransactionPage(),
+                        ),
                       );
                     },
                     child: const Text(
                       'See All',
-                      style: TextStyle(
-                        color: Color(0xFF2E7D32),
-                      ),
+                      style: TextStyle(color: Color(0xFF2E7D32)),
                     ),
                   ),
                 ],
@@ -355,10 +358,7 @@ Widget _buildRecentTransactions() {
                     ? const Center(
                         child: Text(
                           'No transactions yet',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
                         ),
                       )
                     : ListView.builder(
@@ -414,7 +414,10 @@ Widget _buildRecentTransactions() {
 Widget _buildFloatingActionButton(BuildContext context) {
   return FloatingActionButton(
     onPressed: () {
-      final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+      final transactionProvider = Provider.of<TransactionProvider>(
+        context,
+        listen: false,
+      );
 
       // Navigate to Add Transaction Page
       Navigator.push(

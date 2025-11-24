@@ -15,7 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   // Controllers for managing text input state
   // Also reused for saved credentials.
-  
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -441,7 +441,7 @@ class _LoginPageState extends State<LoginPage> {
     //UserCredential user = await _signInWithProvider(AppleAuthProvider());
 
     //_welcomeSignedInUser(user);
-    
+
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -458,7 +458,7 @@ class _LoginPageState extends State<LoginPage> {
   void _welcomeSignedInUser(UserCredential user) {
     print("User is signed in: ${user.user?.displayName}");
 
-    // Reason for "context.mounted": 
+    // Reason for "context.mounted":
     // https://dart.dev/tools/diagnostics/use_build_context_synchronously
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
