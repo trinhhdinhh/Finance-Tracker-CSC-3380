@@ -47,6 +47,9 @@ class CategoryProvider extends ChangeNotifier {
   // List of all categories
   List<CategoryData> _categories = [];
 
+  // Track if we're in filtered mode (to prevent auto-recalculation from overriding)
+  bool _isFiltered = false;
+
   CategoryProvider() {
     _initializeDefaultCategories();
   }
@@ -96,6 +99,20 @@ class CategoryProvider extends ChangeNotifier {
         lightColor: const Color(0xFFFECACA),
         budget: 300,
       ),
+      CategoryData(
+        name: 'Housing',
+        icon: Icons.home,
+        color: const Color(0xFF6366F1),
+        lightColor: const Color(0xFFC7D2FE),
+        budget: 1500,
+      ),
+      CategoryData(
+        name: 'Entertainment',
+        icon: Icons.movie,
+        color: const Color(0xFFEC4899),
+        lightColor: const Color(0xFFFBCFE8),
+        budget: 200,
+      ),
     ];
   }
 
@@ -136,6 +153,11 @@ class CategoryProvider extends ChangeNotifier {
 
   /// Recalculate all category spending from transactions
   void recalculateSpending(Map<String, double> categoryTotals, Map<String, int> categoryTransactionCounts) {
+    // Don't override if we're in filtered mode
+    if (_isFiltered) {
+      return;
+    }
+
     // Reset all spending
     for (var category in _categories) {
       category.spent = categoryTotals[category.name] ?? 0.0;
@@ -175,5 +197,24 @@ class CategoryProvider extends ChangeNotifier {
   /// Get total spent
   double get totalSpent {
     return expenseCategories.fold(0.0, (sum, cat) => sum + cat.spent);
+  }
+
+  /// Recalculate spending for a specific time period
+  void recalculateSpendingForPeriod(Map<String, double> categoryTotals, Map<String, int> categoryTransactionCounts) {
+    // Set filtered mode to prevent auto-recalculation from overriding
+    _isFiltered = true;
+
+    // Reset all spending
+    for (var category in _categories) {
+      category.spent = categoryTotals[category.name] ?? 0.0;
+      category.transactions = categoryTransactionCounts[category.name] ?? 0;
+    }
+    notifyListeners();
+  }
+
+  /// Clear filter and return to showing all transactions
+  void clearFilter() {
+    _isFiltered = false;
+    notifyListeners();
   }
 }
