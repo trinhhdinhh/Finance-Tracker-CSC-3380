@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'transaction_page.dart';
-import 'add_transaction_page.dart';
-import 'category_page.dart';
+import 'package:provider/provider.dart';
+import 'package:finance_tracker/features/transactions/pages/transaction_page.dart';
+import 'package:finance_tracker/features/transactions/pages/add_transaction_page.dart';
+import 'package:finance_tracker/features/transactions/providers/transaction_provider.dart';
+import 'package:finance_tracker/features/categories/pages/category_page.dart';
+import 'package:finance_tracker/features/account/pages/account_page.dart';
+import 'package:finance_tracker/features/settings/pages/settings_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -23,7 +27,7 @@ class _DashboardState extends State<Dashboard> {
       _buildHomePage(),
       const AccountPage(),
       const CategoriesAnalyticsPage(),
-      const Center(child: Text('Settings Page - Coming Soon')), // Placeholder for Settings page
+      const SettingsPage(),
     ];
   }
 
