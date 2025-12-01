@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'dart:math' as math;
 import 'package:finance_tracker/features/categories/providers/category_provider.dart';
 import 'package:finance_tracker/features/categories/pages/category_detail_page.dart';
+import 'package:finance_tracker/features/transactions/providers/transaction_provider.dart';
 
 /// Categories and Analytics page displaying spending breakdown with ring chart.
 ///
@@ -29,6 +30,22 @@ class _CategoriesAnalyticsPageState extends State<CategoriesAnalyticsPage> {
 
   // Controls whether chart details are shown
   bool _showChartDetails = false;
+
+  // Map period values to display labels
+  final Map<String, String> _periodLabels = {
+    'week': 'This Week',
+    'month': 'This Month',
+    'year': 'This Year',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    // Apply initial filter after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _filterTransactionsByPeriod(_selectedPeriod);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +128,33 @@ class _CategoriesAnalyticsPageState extends State<CategoriesAnalyticsPage> {
     );
   }
 
-  /// Builds header with back button, title, and period selector
+  /// Filter transactions by the selected period
+  void _filterTransactionsByPeriod(String period) {
+    final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+
+    // Get filtered spending and transaction counts
+    final spending = transactionProvider.calculateCategorySpendingByPeriod(period);
+    final counts = transactionProvider.calculateCategoryTransactionCountsByPeriod(period);
+
+    // Debug: Print filtering info
+    print('=== FILTER APPLIED: $period ===');
+    print('Spending by category: $spending');
+    print('Transaction counts: $counts');
+
+    // Calculate total for debugging
+    double totalSpending = spending.values.fold(0.0, (sum, amount) => sum + amount);
+    print('Total Spending: \$${totalSpending.toStringAsFixed(2)}');
+    print('===========================');
+
+    // Update category provider with filtered data
+    categoryProvider.recalculateSpendingForPeriod(spending, counts);
+
+    // Force a rebuild to ensure UI updates
+    setState(() {});
+  }
+
+  /// Builds header with back button, title, and period dropdown
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -122,7 +165,8 @@ class _CategoriesAnalyticsPageState extends State<CategoriesAnalyticsPage> {
           bottomRight: Radius.circular(24),
         ),
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Back button and title
           Row(
@@ -153,51 +197,137 @@ class _CategoriesAnalyticsPageState extends State<CategoriesAnalyticsPage> {
               ),
             ],
           ),
-          
-          const SizedBox(height: 20),
-          
-          // Period selector
-          Row(
-            children: [
-              _buildPeriodButton('Week', 'week'),
-              const SizedBox(width: 12),
-              _buildPeriodButton('Month', 'month'),
-              const SizedBox(width: 12),
-              _buildPeriodButton('Year', 'year'),
-            ],
-          ),
+
+          // Period dropdown selector
+          _buildPeriodDropdown(),
         ],
       ),
     );
   }
 
-  /// Builds individual period selector button
-  Widget _buildPeriodButton(String label, String value) {
-    final isSelected = _selectedPeriod == value;
-    
-    return Expanded(
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _selectedPeriod = value;
-          });
-          // TODO: Fetch data for selected period
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF15803d) : const Color(0xFFF5F5F5),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : Colors.black54,
+  /// Builds dropdown for period selection
+  Widget _buildPeriodDropdown() {
+    return PopupMenuButton<String>(
+      onSelected: (String value) {
+        setState(() {
+          _selectedPeriod = value;
+        });
+        _filterTransactionsByPeriod(value);
+      },
+      offset: const Offset(0, 50),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFF15803d),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF15803d).withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-          ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.calendar_today,
+              color: Colors.white,
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              _periodLabels[_selectedPeriod] ?? 'This Month',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(
+              Icons.arrow_drop_down,
+              color: Colors.white,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        _buildDropdownItem('week', Icons.date_range, 'This Week', 'Last 7 days'),
+        const PopupMenuDivider(),
+        _buildDropdownItem('month', Icons.calendar_month, 'This Month', 'Last 30 days'),
+        const PopupMenuDivider(),
+        _buildDropdownItem('year', Icons.calendar_today_outlined, 'This Year', 'Last 365 days'),
+      ],
+    );
+  }
+
+  /// Builds individual dropdown menu item
+  PopupMenuItem<String> _buildDropdownItem(
+    String value,
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
+    final isSelected = _selectedPeriod == value;
+
+    return PopupMenuItem<String>(
+      value: value,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0xFF15803d).withOpacity(0.1)
+                    : const Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? const Color(0xFF15803d) : Colors.black54,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                      color: isSelected ? const Color(0xFF15803d) : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: Color(0xFF15803d),
+                size: 20,
+              ),
+          ],
         ),
       ),
     );
