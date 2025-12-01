@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'transaction_page.dart';
 import 'add_transaction_page.dart';
 import 'category_page.dart';
+import 'account_page.dart';
+
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -21,7 +23,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     _pages = [
       _buildHomePage(),
-      const Center(child: Text('Account Page - Coming Soon')), // Placeholder for Account page
+      const AccountPage(),
       const CategoriesAnalyticsPage(),
       const Center(child: Text('Settings Page - Coming Soon')), // Placeholder for Settings page
     ];
