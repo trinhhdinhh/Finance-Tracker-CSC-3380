@@ -7,6 +7,7 @@ import 'package:finance_tracker/core/config/firebase_options.dart';
 import 'package:finance_tracker/features/welcome/pages/welcome_page.dart';
 import 'package:finance_tracker/features/transactions/providers/transaction_provider.dart';
 import 'package:finance_tracker/features/categories/providers/category_provider.dart';
+import 'package:finance_tracker/user_provider.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -37,6 +38,7 @@ class FinanceTrackerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => MyAppState()),
         ChangeNotifierProvider(create: (context) => CategoryProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProxyProvider<CategoryProvider, TransactionProvider>(
           create: (context) => TransactionProvider(),
           update: (context, categoryProvider, transactionProvider) {

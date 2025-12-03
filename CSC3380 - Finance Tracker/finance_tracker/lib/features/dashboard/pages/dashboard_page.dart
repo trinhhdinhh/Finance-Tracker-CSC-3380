@@ -5,8 +5,8 @@ import 'package:finance_tracker/features/transactions/pages/transaction_page.dar
 import 'package:finance_tracker/features/transactions/pages/add_transaction_page.dart';
 import 'package:finance_tracker/features/transactions/providers/transaction_provider.dart';
 import 'package:finance_tracker/features/categories/pages/category_page.dart';
-import 'package:finance_tracker/features/account/pages/account_page.dart';
 import 'package:finance_tracker/features/settings/pages/settings_page.dart';
+import 'package:finance_tracker/account_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

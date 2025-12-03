@@ -14,14 +14,30 @@ class AccountData {
   });
 }
 
+
 class UserProvider extends ChangeNotifier {
   String userName = "Landon Snow";
   String userEmail = "landon.snow@example.com";
 
-  void updateProfile(String name, String email) {
-    userName = name ;
-    userEmail = email;
+//Default avatar color
+Color userAvatarColor = Colors.green;
+
+String tempName = '';
+
+  void updateProfile(String name) {
+    userName = name;
+    tempName = '';
     notifyListeners();
+}
+
+void updateAvatarColor(Color newColor) {
+  userAvatarColor = newColor;
+  notifyListeners();
+}
+
+void updateTempName(String value) {
+  tempName = value;
+  notifyListeners();
 }
 //-----Default accounts-------
 List<AccountData> accounts = [
