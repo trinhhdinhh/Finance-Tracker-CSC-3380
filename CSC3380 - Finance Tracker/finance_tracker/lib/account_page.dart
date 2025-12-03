@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:finance_tracker/user_provider.dart';
 
@@ -55,11 +56,15 @@ Widget _buildProfileSection(BuildContext context) {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
 */
+//--- Profile Avatar Circle
   CircleAvatar(
     radius: 32,
-    backgroundColor: Colors.green,
+    backgroundColor: userProvider.userAvatarColor,
     child: Text(
-      userProvider.userName[0],
+      (userProvider.tempName.isNotEmpty
+      ? userProvider.tempName[0]
+      : userProvider.userName[0]
+      ).toUpperCase(),
       style: TextStyle(
         color: Colors.white,
         fontSize: 32,
@@ -95,6 +100,7 @@ Column(
             ],
           ),
     Spacer(),
+
     //Edit Profile 
     TextButton(
       onPressed: () => showEditProfileDialog(context),
@@ -133,13 +139,11 @@ Widget _buildLinkedAccountsSection(BuildContext context) {
      'Linked Accounts',
       style: TextStyle(
         fontSize: 22, //all subject to change
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-  ),
-),
+        fontWeight: FontWeight.bold),
+    ),
 
 SizedBox(height: 16),
-
+//------- Cash Wallet not removable)
 _accountCard(
   acc: AccountData(
     name: "Cash Wallet",
@@ -149,7 +153,10 @@ _accountCard(
   ),
   index: null,
 ),
+
 const SizedBox(height: 12),
+
+//----- User Accounts,
 Expanded(
   child: ListView.builder(
     itemCount: userProvider.accounts.length,
@@ -249,6 +256,26 @@ return Container(
 Widget _addAccountButton(BuildContext context) {
 return GestureDetector(
   onTap: () => showAddAccountDialog(context),
+
+/*
+//----- View all ------
+Row(
+  children: [
+  Text(
+    'View All',
+    style: TextStyle(
+      fontSize: 14,
+      color: Colors.green,
+      fontWeight: FontWeight.w600,
+      ),
+    ),
+    Icon(Icons.chevron_right, color: Colors.green, size: 20),
+        ],
+      ),
+
+    ],
+*/
+
   child: Container(
     padding: EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -259,6 +286,10 @@ return GestureDetector(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.add, color: Colors.green),
+
+
+        SizedBox(width: 8),
+
         Text(
           'Add Account',
           style: TextStyle(
@@ -278,25 +309,82 @@ void showEditProfileDialog(BuildContext context) {
   final userProvider = Provider.of<UserProvider>(context, listen: false);
 
   final nameCtrl = TextEditingController(text: userProvider.userName);
-  final emailCtrl = TextEditingController(text: userProvider.userEmail);
+  
+  // Like the category page
+    final List<Color> avatarColors = [
+    Colors.orange,
+    Colors.blue,
+    Colors.purple,
+    Colors.green,
+    Colors.teal,
+    Colors.red,
+    Colors.pink,
+    Colors.yellow,
+    Colors.indigo,
+    Colors.brown,
+  ];
+
+  Color selectedColor = userProvider.userAvatarColor;
+
 
   showDialog(
     context: context,
     builder: (context) {
-      return AlertDialog(
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+               borderRadius: BorderRadius.circular(20),
+            ),
         title: const Text("Edit Profile"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: "Name")),
-            TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: "Email")),
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: "Name"),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z ]')),
+            ],
+            onChanged: (value) {
+              userProvider.updateTempName(value);
+            },
+          ),
+
+        SizedBox(height: 20),
+
+        const Text(
+          "Select Avatar Color",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height:10),
+
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: avatarColors.map((color) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedColor = color;
+                });
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: color,
+                child: (selectedColor == color)
+                ? const Icon(Icons.check, color: Colors.white)
+                : null,
+                  ),
+                );
+              }).toList(),
+            ),
           ],
         ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
         TextButton(
           onPressed: () {
-            userProvider.updateProfile(nameCtrl.text, emailCtrl.text);
+            userProvider.updateProfile(nameCtrl.text);
+            userProvider.updateAvatarColor(selectedColor);
             Navigator.pop(context);
           },
           child: const Text("Save"),
@@ -304,6 +392,8 @@ void showEditProfileDialog(BuildContext context) {
       ],
       );
     },
+  );
+},
   );
 }
 
@@ -316,7 +406,6 @@ void showAddAccountDialog(BuildContext context) {
   final last4Ctrl = TextEditingController();
   final balanceCtrl = TextEditingController();
 
-  String? errorMessage;
   
   showDialog(
     context: context,
@@ -327,11 +416,27 @@ void showAddAccountDialog(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: "Account Name")),
-            TextField(controller: last4Ctrl, decoration: const InputDecoration(labelText: "Last 4 Digits")),
+            //----- Only allows number + last4
+            TextField(
+              controller: last4Ctrl,
+              decoration: const InputDecoration(
+                labelText: "Last 4 Digits",
+              ),
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+            ),
+
+            //----- only Numbers and decimal
             TextField(
               controller: balanceCtrl,
-              decoration: const InputDecoration(labelText: "Balance"),
-              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText : "Balance"),
+              keyboardType: const TextInputType.numberWithOptions(decimal:true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              ],
             ),
           ],
         ),
@@ -339,6 +444,15 @@ void showAddAccountDialog(BuildContext context) {
         TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
         TextButton(
           onPressed: () {
+            //------ Validate
+            if (last4Ctrl.text.length != 4) {
+              return;
+            }
+            if (double.tryParse(balanceCtrl.text) == null) {
+              return;
+            }
+          
+          //Create account
             final acc = AccountData(
               name: nameCtrl.text,
               last4: last4Ctrl.text,
@@ -346,11 +460,12 @@ void showAddAccountDialog(BuildContext context) {
               icon: Icons.account_balance,
             );
             userProvider.addAccount(acc);
+            
             Navigator.pop(context);
           },
           child: const Text("Add"),
-        ),
-      ],
+          ),
+        ],
       );
     },
   );
@@ -381,9 +496,87 @@ void _confirmDelete(BuildContext context, int index) {
   },
   );
 }
-++ b/CSC3380 - Finance Tracker/finance_tracker/lib/features/dashboard/pages/dashboard_page.dart	
-import 'package:finance_tracker/account_page.dart';
-++ b/CSC3380 - Finance Tracker/finance_tracker/lib/main.dart	
-import 'package:finance_tracker/user_provider.dart';
 
-        ChangeNotifierProvider(create: (context) => UserProvider()),
+
+//---- Used to not have to copy paste same code ----
+Widget _buildAccountCard({
+    required IconData icon,
+    required String name,
+    required String numbers,
+    required double balance,
+  }) {
+    //------- Balance -----
+    final String formattedBalance = (balance <0)
+      ? "-\$${balance.abs().toStringAsFixed(2)}"
+      : "\$${balance.toStringAsFixed(2)}";
+
+    // neg = red , pos = green , zero = grey
+    final Color balanceColor =
+        balance < 0 ? Colors.red : (balance == 0 ? Colors.grey : Colors.green);
+
+
+  return Container(
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: Colors.white,
+        width: 1,
+      ),
+    ),
+
+    child: Row(
+      children: [
+        Container(
+          height: 48,
+          width: 48,
+          decoration: BoxDecoration(
+            color: Color(0xFFE8E8E8),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            size: 28,
+            color: Colors.grey,
+          ),
+        ),
+
+        SizedBox(width: 12),
+
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            if (numbers.isNotEmpty)
+            Text(
+              numbers,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+        Spacer(),
+
+      //------- For Balance ------
+        Text(
+          formattedBalance,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: balanceColor,
+          ),
+        ),
+      ],
+    ),
+  );
+}
